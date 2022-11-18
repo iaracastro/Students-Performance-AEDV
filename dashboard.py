@@ -63,23 +63,36 @@ sexo_type = st.sidebar.selectbox(
     options = ("Tudo", "Homem","Mulher")
 )
 
-etnic_group_type = st.sidebar.multiselect(
+etnic_group_type = st.sidebar.selectbox(
     "Selecione o grupo étnico:",
-    options = df["grupo_etnico"].unique(),
-    default = df["grupo_etnico"].unique()
+    options = ("Tudo", "Grupo A", "Grupo B","Grupo C","Grupo D","Grupo E")
 )
 ################################################################################################
-
+#df_selection_type2 when is both genders
 if sexo_type == "Tudo":
-    df_selection_type = df
+    if etnic_group_type == "Tudo":
+        df_selection_type = df
+        df_selection_type2 = df
+    else:
+        df_selection_type = df.query(
+        "grupo_etnico == @etnic_group_type")
+        df_selection_type2 = df.query(
+        "grupo_etnico == @etnic_group_type")
 else:
-    df_selection_type = df.query(
-        "sexo == @sexo_type & grupo_etnico == @etnic_group_type"
+    df_selection_type2 = df.query(
+    "grupo_etnico == @etnic_group_type"
     )
+    if etnic_group_type == "Tudo":
+        df_selection_type = df.query(
+        "sexo == @sexo_type"
+        )
+    else:
+        df_selection_type = df.query(
+        "grupo_etnico == @etnic_group_type & sexo == @sexo_type"   
+        )
+    
+    
 
-df_selection_type2 = df.query(
-        "grupo_etnico == @etnic_group_type"
-    )
 ##########################################################
 
 
@@ -158,7 +171,10 @@ if fator_type == "Educação Parental":
     palette = "husl"
     c1, c3, c2 = st.columns((3/8, 1/8, 4/8))
 else:
-    palette=['#ffd92f', '#a6d854']
+    if fator_type == "Lanche":
+        palette=['#ffd92f', '#a6d854']
+    else:
+        palette=['#e0dcdc', '#a6d854']
     c1, c3, c2 = st.columns((3.375/9, 1/9, 3.725/9))
     if fator_type == "Lanche":
         ordem = order_lanche
@@ -187,44 +203,18 @@ options.insert(0,"Todos")
 with c1:
     fator_especifico = st.selectbox('Selecione uma opção', options=options)
     plt.figure(figsize=(7,5))
-    if fator_especifico == "Com Desconto":
-        df_selection_type = df_selection_type.query("lanche == 'Com Desconto'")
-        df_selection_type2 = df_selection_type2.query("lanche == 'Com Desconto'")
-    elif fator_especifico == "Sem Desconto":
-        df_selection_type = df_selection_type.query("lanche == 'Sem Desconto'")
-        df_selection_type2 = df_selection_type2.query("lanche == 'Sem Desconto'")
-    elif fator_especifico == "Completo":
-        df_selection_type = df_selection_type.query("curso_preparatorio == 'Completo'")
-        df_selection_type2 = df_selection_type2.query("curso_preparatorio == 'Completo'")
-    elif fator_especifico == "Nenhum":
-        df_selection_type = df_selection_type.query("curso_preparatorio == 'Nenhum'")
-        df_selection_type2 = df_selection_type2.query("curso_preparatorio == 'Nenhum'")
-    elif fator_especifico == "Ensino Médio Incompleto":
-        df_selection_type = df_selection_type.query("educ_parental == 'Ensino Médio Incompleto'")
-        df_selection_type2 = df_selection_type2.query("educ_parental == 'Ensino Médio Incompleto'")
-    elif fator_especifico == "Ensino Médio":
-        df_selection_type = df_selection_type.query("educ_parental == 'Ensino Médio'")
-        df_selection_type2 = df_selection_type2.query("educ_parental == 'Ensino Médio'")    
-    elif fator_especifico == "Faculdade Incompleta":
-        df_selection_type = df_selection_type.query("educ_parental == 'Faculdade Incompleta'")
-        df_selection_type2 = df_selection_type2.query("educ_parental == 'Faculdade Incompleta'")
-    elif fator_especifico == "Grau de Associado":
-        df_selection_type = df_selection_type.query("educ_parental == 'Grau de Associado'")
-        df_selection_type2 = df_selection_type2.query("educ_parental == 'Grau de Associado'")
-    elif fator_especifico == "Bacharel":
-        df_selection_type = df_selection_type.query("educ_parental == 'Bacharel'")
-        df_selection_type2 = df_selection_type2.query("educ_parental == 'Bacharel'")
-    elif fator_especifico == "Mestrado":
-        df_selection_type = df_selection_type.query("educ_parental == 'Mestrado'")
-        df_selection_type2 = df_selection_type2.query("educ_parental == 'Mestrado'")
-
-
-    if sexo_type == "Tudo":
-        histogram = sns.histplot(x=df_selection_type2[materia], hue=df_selection_type2["sexo"], stat="probability",bins=[0,10,20,30,40,50,60,70,80,90,100],color = '#589cd4')
-        plt.ylim(0,0.2)
+    if fator_especifico != "Todos":
+        query = str(f"{fator} == '{fator_especifico}'")
+        df_selection_hist = df_selection_type.query(query)
+        df_selection_hist2 = df_selection_type2.query(query)
     else:
-        histogram = sns.histplot(x=df_selection_type[materia], stat="probability",bins=[0,10,20,30,40,50,60,70,80,90,100],color = '#589cd4')
-        plt.ylim(0,0.3)
+        df_selection_hist = df_selection_type
+        df_selection_hist2 = df_selection_type2
+    #Precisar de um query pro histograma?
+    if sexo_type == "Tudo":
+        histogram = sns.histplot(x=df_selection_hist2[materia], hue=df_selection_hist2["sexo"], stat="probability",bins=[0,10,20,30,40,50,60,70,80,90,100],color = '#589cd4')
+    else:
+        histogram = sns.histplot(x=df_selection_hist[materia], stat="probability",bins=[0,10,20,30,40,50,60,70,80,90,100],color = '#589cd4')
 
     plt.ylabel("",rotation=0)
     plt.xlabel(materias_type.capitalize())
