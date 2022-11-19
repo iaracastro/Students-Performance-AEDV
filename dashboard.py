@@ -126,14 +126,14 @@ color_discrete_sequence=['#bb83f4', '#fc8d62', '#66c2a5', '#e78ac3','#ffd92f'])
 etnic_group_pie.update_layout(margin = dict(l=5, r=5, t=5, b=5,pad=0), legend=dict(x=1))
 #, title=dict(text="Grupo",x=0,y=0.95)
 
-########## COUNTERS #######################
+########## COUNTERS #######################################################################
 
 total_students = int(df_selection_type.value_counts().sum())
 media_mat = round(df_selection_type['notas_matematica'].mean(),2)
 media_leitura = round(df_selection_type['notas_leitura'].mean(),2)
 media_redacao = round(df_selection_type['notas_redacao'].mean(),2)
 
-########## ROWS AND COLUMNS #######################
+########## ROWS AND COLUMNS ###############################################################
 
 a1, a2, a3, a4 = st.columns((1/3, 2/9,2/9,2/9))
 
@@ -150,7 +150,7 @@ with a4:
     st.metric("Média em Redação", media_redacao)
     st.markdown("""---""")
 
-#####################################################
+#############################################################################################
 b1, b2 = st.columns((1/3,2/3))
 
 with b1:
@@ -159,7 +159,7 @@ with b1:
     st.write("Grupo Étnico")
     st.plotly_chart(etnic_group_pie, use_container_width=True)
 
-####################################################
+############################################################################################
 with b2:
     fator_type = st.selectbox('Selecione o fator', options=("Educação Parental", "Lanche", "Curso Preparatório"))
 
@@ -190,7 +190,7 @@ figsize= ((2, 1.1))
 with b2:
     st.pyplot(plt.gcf(), use_container_width=True)
 
-########################################
+################################################################################
 
 if fator_type == "Educação Parental":
     options = order_educ_parental
@@ -221,7 +221,7 @@ with c1:
     st.write(f"Histograma de {materias_type}")
     st.pyplot(plt.gcf(), use_container_width=True)
     
-########################################
+################################################################################
 
 exams_dummy = pd.get_dummies(df_corr)
 
