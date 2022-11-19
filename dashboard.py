@@ -246,7 +246,5 @@ heatmap = sns.heatmap(corr[[materia]].sort_values(by=materia, ascending=False)[4
 with c2:
     st.write(f'Correlação de {fator_type.lower()} com {materias_type}')
     st.pyplot(plt.gcf())
-########## SAMPLE ######################
-
 
 ########################################
